@@ -1,0 +1,54 @@
+import streamlit as st
+import math
+
+def calculate_payment(prin_amnt, mon_dep, interest_rate):
+    tot_interest = 0
+    tot_deposit = 0
+    ext_dep = 0
+
+    if prin_amnt % mon_dep:
+        no_of_mon = math.floor(prin_amnt / mon_dep) + 1
+        ext_dep = int(prin_amnt % mon_dep)
+        st.write(f"You have to pay Rs.{mon_dep} for {no_of_mon - 1} months and Rs.{ext_dep} for the next one month plus interest amount stated below")
+    else:
+        no_of_mon = int(prin_amnt / mon_dep)
+        st.write(f"You have to pay Rs.{mon_dep} for {no_of_mon} months plus interest amount stated below")
+
+    month = 1
+    if ext_dep:
+        while month <= no_of_mon:
+            if month <= no_of_mon - 1:
+                interest = interest_rate * (prin_amnt / 100)
+                tot_interest = tot_interest + interest
+                tot_deposit = mon_dep + tot_deposit
+                prin_amnt = prin_amnt - mon_dep
+            elif month == no_of_mon:
+                interest = interest_rate * (ext_dep / 100)
+                tot_interest = tot_interest + interest
+                tot_deposit = tot_deposit + ext_dep
+                prin_amnt = prin_amnt - ext_dep
+            month = month + 1
+    else:
+        while month <= no_of_mon:
+            interest = interest_rate * (prin_amnt / 100)
+            tot_interest = tot_interest + interest
+            tot_deposit = mon_dep + tot_deposit
+            prin_amnt = prin_amnt - mon_dep
+            month = month + 1
+
+    total_payment = tot_deposit + tot_interest
+    st.write(f"Total Interest amount to be paid is Rs.{tot_interest}")
+    st.write(f"So you have to pay a total amount of Rs.{total_payment} at the end of {no_of_mon} months")
+
+def main():
+    st.title("Loan Payment Calculator")
+
+    prin_amnt = st.number_input("Enter the Principal amount:")
+    mon_dep = st.number_input("Enter the amount that can be paid monthly:")
+    interest_rate = st.number_input("Enter the interest rate per 100 Rupees:")
+
+    if st.button("Calculate"):
+        calculate_payment(prin_amnt, mon_dep, interest_rate)
+
+if __name__ == "__main__":
+    main()
